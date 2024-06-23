@@ -1,3 +1,4 @@
+import os
 import pandas as pd
 from utils.utilities import get_tair_id_from_description
 from utils.data_io import load_arabidopsis_model
@@ -144,18 +145,19 @@ def generate_base_model(genes_to_remove: list, save_path: str, model: cobra.Mode
     # It is safer to save the model
     cobra.io.save_json_model(model, save_path)
 
-def gapfill_base_model(outfile: str):
+def gapfill_base_model(infile: str, outfile: str):
     """
     Gapfills the base model by adding reactions that are not present in the base model from the loaded model.
     
     Args:
+        infile (str): The path to load the model that needs to be gapfilled.
         outfile (str): The path to save the gapfilled base model.
     
     Returns:
         None
     """
     model = load_arabidopsis_model()
-    base_model = cobra.io.load_json_model(os.path.join('./models','hirsutum_base_model.json'))
+    base_model = cobra.io.load_json_model(infile)
     print("Loaded both models, now checking reactions one at a time")
     for r in model.reactions:
         if r.id not in [react.id for react in base_model.reactions]:
